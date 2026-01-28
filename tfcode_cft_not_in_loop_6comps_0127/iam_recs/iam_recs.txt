@@ -1,0 +1,53 @@
+{
+  "resourceRoles": [
+    {
+      "resourceName": "projects/gcp-project",
+      "roles": [
+        {
+          "name": "roles/iam.infrastructureAdmin",
+          "permissions": [
+            "compute.networks.get",
+            "serviceusage.services.enable",
+            "compute.subnetworks.create",
+            "compute.firewalls.create",
+            "compute.networks.create",
+            "compute.subnetworks.delete",
+            "compute.firewalls.get",
+            "compute.subnetworks.get",
+            "serviceusage.services.get",
+            "compute.networks.delete",
+            "compute.firewalls.delete"
+          ]
+        },
+        {
+          "name": "roles/iam.serviceAccountUser",
+          "permissions": [
+            "iam.serviceAccounts.actAs"
+          ]
+        },
+        {
+          "name": "roles/serviceusage.serviceUsageAdmin",
+          "permissions": [
+            "serviceusage.services.use",
+            "serviceusage.services.get",
+            "serviceusage.services.disable",
+            "serviceusage.services.enable"
+          ]
+        }
+      ]
+    }
+  ],
+  "[cloud_iam.policy_ai.iampolicyai.IacRolesAdditionalInfo.additional_info]": {
+    "resourceInfos": [
+      {
+        "resourceName": "projects/gcp-project",
+        "createResourceTypes": [
+          "google_compute_firewall",
+          "google_compute_network",
+          "google_compute_subnetwork",
+          "google_project_service"
+        ]
+      }
+    ]
+  }
+}
