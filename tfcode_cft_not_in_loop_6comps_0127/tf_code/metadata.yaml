@@ -1,0 +1,112 @@
+apiVersion: blueprints.cloud.google.com/v1alpha1
+kind: TerraformBlueprint
+metadata:
+  name: terraform-google-onemcp
+  source:
+    git:
+      repo: https://github.com/GoogleCloudPlatform/terraform-google-onemcp.git
+      dir: /
+spec:
+  info:
+    title: OneMCP Foundational Project Setup
+    version: 1.0.0
+    actuationTool:
+      flavor: terraform
+      version: ">= 1.3.0"
+    description:
+      tagline: A Terraform module to configure a foundational GCP project with a secure VPC and core APIs.
+      detailed: |
+        This Terraform module, named OneMCP, is designed to configure a foundational
+        Google Cloud Platform (GCP) project. It handles the essential setup tasks,
+        including enabling a core set of APIs and provisioning a secure, custom Virtual
+        Private Cloud (VPC) network. By automating these initial steps, the module
+        ensures a consistent and best-practice-based starting point for deploying
+        further resources. It creates a VPC network, a subnet within a specified
+        region, and a firewall rule to allow SSH access via Google's Identity-Aware
+        Proxy (IAP), which is a security best practice over exposing SSH to the public
+        internet.
+    labels:
+      gcp.ca.module.category: Network
+  terraform:
+    input:
+      variables:
+        - name: project_id
+          description: The unique identifier for the Google Cloud project where resources will be deployed. If not provided, the provider's project will be used.
+          type: string
+          required: false
+          defaultValue: null
+        - name: region
+          description: The Google Cloud region where network resources will be created.
+          type: string
+          required: false
+          defaultValue: "us-central1"
+        - name: network_name
+          description: The name for the custom VPC network.
+          type: string
+          required: false
+          defaultValue: "onemcp-vpc"
+        - name: subnet_name
+          description: The name for the subnetwork to be created within the VPC.
+          type: string
+          required: false
+          defaultValue: "onemcp-subnet"
+        - name: subnet_ip_cidr_range
+          description: The primary IPv4 address range for the subnetwork, specified in CIDR notation.
+          type: string
+          required: false
+          defaultValue: "10.10.10.0/24"
+        - name: apis_to_enable
+          description: A list of Google Cloud APIs to enable on the project.
+          type: list(string)
+          required: false
+          defaultValue:
+            - "compute.googleapis.com"
+            - "iam.googleapis.com"
+            - "cloudresourcemanager.googleapis.com"
+            - "serviceusage.googleapis.com"
+            - "iap.googleapis.com"
+      variableGroups:
+        - name: Project and Location
+          description: Configure the target GCP project and region for deployment.
+          variables:
+            - project_id
+            - region
+        - name: VPC Network Configuration
+          description: Define the details for the custom VPC network and subnetwork.
+          variables:
+            - network_name
+            - subnet_name
+            - subnet_ip_cidr_range
+        - name: API Services
+          description: Specify which APIs to enable on the project.
+          variables:
+            - apis_to_enable
+    output:
+      - name: network_name
+        description: The name of the created VPC network.
+      - name: network_id
+        description: The unique ID of the created VPC network.
+      - name: subnet_name
+        description: The name of the created subnetwork.
+      - name: subnet_id
+        description: The unique ID of the created subnetwork.
+  requirements:
+    roles:
+      - level: Project
+        roles:
+          - roles/compute.networkAdmin
+          - roles/serviceusage.serviceUsageAdmin
+    services:
+      - compute.googleapis.com
+      - iam.googleapis.com
+      - cloudresourcemanager.googleapis.com
+      - serviceusage.googleapis.com
+      - iap.googleapis.com
+requirements:
+  roles:
+    - level: project
+      role: roles/iam.infrastructureAdmin
+    - level: project
+      role: roles/iam.serviceAccountUser
+    - level: project
+      role: roles/serviceusage.serviceUsageAdmin
